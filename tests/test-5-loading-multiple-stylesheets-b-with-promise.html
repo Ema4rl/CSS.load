@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CSS.load tests (Loading multiple stylesheets with promise)</title>
+    <!-- testing data-only script loading -->
+    <script src="../src/CSS.load.js"></script>
+    <script>
+        var timeDiff = function(){
+            var d, time;
+            return {
+                setStartTime:function (){
+                    d = new Date();
+                    time  = d.getTime();
+                },
+                getDiff:function (){
+                    d = new Date();
+                    return (d.getTime()-time);
+                }
+            };
+        }();
+
+        function done() {
+            var log_value_text = "Loading/Execution Time: "+timeDiff.getDiff()+"\n";
+            (function fn(){
+                var load_log = document.getElementById("load_log");
+                if (load_log !== null) load_log.value += log_value_text;
+                else setTimeout(fn,10);
+            })();
+        }
+
+        function writeText(text) {
+            var load_log = document.querySelector('#load_log');
+            if (!!load_log) {
+                text += "\n";
+                load_log.value += text;
+                console.info(text);
+                done();
+            }
+        }
+
+        timeDiff.setStartTime();
+
+        $CSS().load(['css/bootstrap.min.css', 'css/docs.css', {href: "css/1.18b178.css", media: "screen"}])
+                .done(function (ss) {
+                    writeText(ss.getAttribute('data-href') + ' was successfully loaded!');
+                    // TODO: find a way to return just the initial URI
+                }).fail(function (ss) {
+                    writeText(ss.getAttribute('data-href') + ' was not successfully loaded 2!');
+                }).always(function (ss) {
+                    writeText(ss.getAttribute('data-href') + ' always run 2!');
+                });
+
+        $CSS().load('css/bootstrap-theme.min.css', 'css/font-awesome.css')
+                .done(function (ss) {
+                    writeText(ss.getAttribute('data-href') + ' was successfully loaded!');
+                    // TODO: find a way to return just the initial URI
+                }).fail(function (ss) {
+                    writeText(ss.getAttribute('data-href') + ' was not successfully loaded 2!');
+                }).always(function (ss) {
+                    writeText(ss.getAttribute('data-href') + ' always run 2!');
+                });
+    </script>
+</head>
+
+<body>
+
+<h1>CSS.load tests (Loading multiple stylesheets with promise) <i class="fa fa-user"></i></h1>
+<ul>
+    <li>
+        <a href="test-5-loading-multiple-stylesheets-a.html">Loading Dependencies without promise</a>
+    </li>
+    <li>
+        <a href="test-5-loading-multiple-stylesheets-b-with-promise.html">Loading Dependencies with promise</a>
+    </li>
+</ul>
+
+<img src="images/a30bc212d61711e29ade22000a1f9bd0_7.jpg" width="100" hspace="5" alt="image 1" title="size: 379kb" />
+<img src="images/ed146454723f11e29f5522000a9f14ae_7.jpg" width="100" hspace="5" alt="image 2" title="size: 20kb" />
+
+<br />
+<form name="log_form">
+    <label>
+        <textarea id="load_log" name="load_log" cols="80" rows="10"></textarea>
+    </label>
+</form>
+
+</body>
+</html>

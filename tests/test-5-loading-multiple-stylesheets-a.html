@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CSS.load tests (Loading multiple stylesheets)</title>
+    <!-- testing data-only script loading -->
+    <script src="../src/CSS.load.js"></script>
+    <script>
+        $CSS().load(['css/bootstrap.min.css', 'css/docs.css', {href: "css/1.18b178.css", media: "screen"}]);
+
+        $CSS().load('css/bootstrap-theme.min.css', 'css/font-awesome.css');
+    </script>
+</head>
+
+<body>
+
+<h1>CSS.load tests (Loading multiple stylesheets) <i class="fa fa-user"></i></h1>
+<ul>
+    <li>
+        <a href="test-5-loading-multiple-stylesheets-a.html">Loading Dependencies without promise</a>
+    </li>
+    <li>
+        <a href="test-5-loading-multiple-stylesheets-b-with-promise.html">Loading Dependencies with promise</a>
+    </li>
+</ul>
+
+<img src="images/a30bc212d61711e29ade22000a1f9bd0_7.jpg" width="100" hspace="5" alt="image 1" title="size: 379kb" />
+<img src="images/ed146454723f11e29f5522000a9f14ae_7.jpg" width="100" hspace="5" alt="image 2" title="size: 20kb" />
+
+<br />
+<form name="log_form">
+    <label>
+        <textarea id="load_log" name="load_log" cols="80" rows="10"></textarea>
+    </label>
+</form>
+
+</body>
+</html>
