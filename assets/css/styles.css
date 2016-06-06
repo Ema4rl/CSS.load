@@ -624,8 +624,6 @@ header {
     min-height: 76px;
 }
 header img {
-    width: 210px;
-    height: auto;
     cursor: default;
     pointer-events: none;
     margin: 0;
@@ -878,6 +876,7 @@ footer {
     }
     header img {
         width: 180px;
+        height: 125px;
     }
     header p {
         display: none;
