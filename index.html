@@ -1,0 +1,522 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Css.load by Harrison Emmanuel (Ema4rl)</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="preload" as="style" href="assets/css/agate.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script src="assets/js/Only.min.js" data-only="assets/js/main.js" async></script>
+</head>
+<body>
+
+<header>
+    <img src="assets/img/CSS.load-2.png" alt="CSS.load [logo]">
+    <p>An asynchronous CSS loading promise library</p>
+
+    <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/Ema4rl/CSS.load" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+            <span>Downloads:</span>
+            <ul>
+                <li><a href="https://github.com/Ema4rl/CSS.load/zipball/master" class="button">ZIP</a></li>
+                <li><a href="https://github.com/Ema4rl/CSS.load/tarball/master" class="button">TAR</a></li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<div class="wrapper">
+    <nav id="toc"></nav>
+    <section>
+        <h1>CSS.load</h1>
+
+        <p>
+            A brilliant library for asynchronously loading CSS and executing callbacks via a cross-browser compatible promise API.
+        </p>
+
+        <p>
+            Inspired by: <a href="https://github.com/filamentgroup/loadCSS" target="cl_tab">loadCSS</a>,
+            <a href="https://gist.github.com/pete-otaqui/3912307" target="cl_tab">css-onload.js</a>, and
+            <a href="http://ema4rl.github.io/Only.js">Only.js</a>.
+        </p>
+
+        <h2>Why CSS.load?</h2>
+
+        <p>
+            There are basically four reasons why CSS.load was born. They are <small class="text-muted">(in no particular order)</small>:
+        </p>
+        <ol>
+            <li>
+                To prevent the delay of page rendering when stylesheets <small class="text-muted">(not critical to initial page rendering)</small>
+                referenced with <code>link[rel=stylesheet]</code> or <code>@import</code> are being downloaded.
+            </li>
+            <li>
+                To have a straightforward and simple API for: stylesheet insert points, and deep browser support <span class="text-muted">(IE8+)</span>
+                for callbacks.
+            </li>
+            <li>
+                To be the <a href="http://ema4rl.github.io/Only.js">Only.js</a> of asynchronous CSS loading.
+            </li>
+            <li>
+                To assist <a href="http://ema4rl.github.io/Only.js">Only.js</a> for faster page loads.
+            </li>
+        </ol>
+        <p>
+            CSS.load ensures you're able to load non-critical stylesheets asynchronously, so they don't block page rendering.
+        </p>
+
+        <h2>Basic Usage</h2>
+
+        <p>
+            In it's basic form, simply call the <code>load</code> function and pass it a stylesheet URL:
+        </p>
+
+        <div class="highlight">
+            <pre><code>$CSS().load("path/to/stylesheet.css");</code></pre>
+        </div>
+
+        <p>
+            The code above will insert a new CSS stylesheet <code>link</code> <em>after</em> the <b>first</b> <code>meta</code>
+            CSS.load finds in the head, and will return a chainable promise-like callback API with a reference to the <code>link</code>.
+            Multiple calls to CSS.load will reference CSS files in reverse the order they are called, but may finish loading in a different order
+            than they were called depending on network conditions.
+        </p>
+
+        <h2>Automatic Usage</h2>
+
+        <p>
+            Newer browsers are beginning to support a standard markup pattern for loading CSS (and other file types) asynchronously:
+            <code>&lt;link rel="preload"&gt;</code> (<a href="https://www.w3.org/TR/2015/WD-preload-20150721/">W3C Spec</a>).
+        </p>
+
+        <p>The markup for referencing your CSS file looks like this:</p>
+
+        <div class="highlight">
+            <pre><code>&lt;link rel="preload" href="path/to/stylesheet.css" as="style"&gt;
+&lt;noscript&gt;&lt;link rel="stylesheet" href="path/to/stylesheet.css"&gt;&lt;/noscript&gt;</code></pre>
+        </div>
+
+        <p>
+            The current implementation of this markup pattern is to load these asynchronous CSS with low priority.
+            CSS.load will act as a polyfill for browsers that support or don't yet support this new feature by automatically
+            converting them to stylesheets <span class="text-muted">(and download with higher priority)</span>.
+        </p>
+
+        <p>
+            <b>NOTE:</b> <code>rel=preload</code> does not apply the CSS on its own. CSS.load will try fetching these stylesheets asynchronously
+            <span class="text-muted">(the browser cache will be used for supported browsers)</span> and apply the CSS as soon as the CSS
+            finishes loading. Since CSS.load requires JavaScript, you may want to include a reference to your CSS file using a
+            <code>noscript</code> element to ensure it only applies in non-JavaScript environments.
+        </p>
+
+        <p>
+            <b>NOTE:</b> Be sure that your CSS file will be referenced from the same spot in the source order as the original <code>link</code>
+            element whether the browser supports <code>rel=preload</code> or not. Keep this in mind, as you may want to place the
+            <code>link</code> in a particular location in your <code>head</code> element so that the CSS loads with an expected cascade order.
+        </p>
+
+        <p>
+            You can view a demo of this <code>rel=preload</code> pattern below: <a href="#online-tests"># Online Tests</a>
+        </p>
+
+        <h2>Function API</h2>
+
+        <p>When you're calling CSS.load manually (without the <code>rel=preload</code> pattern.</p>
+
+        <h3>Methods</h3>
+        <ul>
+            <li>
+                <a href="#setOptions">$CSS()</a>
+            </li>
+            <li>
+                <a href="#load">$CSS().load()</a>
+            </li>
+            <li>
+                <a href="#done">$CSS().load().done()</a>
+            </li>
+            <li>
+                <a href="#fail">$CSS().load().fail()</a>
+            </li>
+            <li>
+                <a href="#always">$CSS().load().always()</a>
+            </li>
+            <li>
+                <a href="#noConflict">$CSS().noConflict()</a>
+            </li>
+        </ul>
+
+        <hr>
+        <p id="setOptions">
+            [<i>$CSS</i>] $CSS<b>(<i>object</i> <b>optionsObject</b>)</b>
+        </p>
+        <p>
+            Sets one or more options to be in effect for the current chain being executed. This method is chainable and must be chained.
+            It is <span class="text-muted">(obviously)</span> the first call in the chain (as it internally calls a <code>setOptions()</code> method).
+        </p>
+        <p id="optionsobject">
+            <span class="text-underline">Parameters</span><br>
+            <b>optionsObject</b> : an object which contains name/value pairs for the options to set:
+        </p>
+        <ul>
+            <li>
+                <b>insertAtElement</b>: a string (defaults to null) a valid selector string that is accepted by <code>document.querySelector()</code>.
+                If the supplied selector doesn't exist (ie, null) it will finally default to the first 'meta' element in the <code>&lt;head&gt;</code>.
+            </li>
+            <li>
+                <b>insertBefore</b>: a boolean (defaults to false) which controls if the <code>&lt;link&gt;</code> should be inserted before
+                or after selector defined by the insertAtElement option.
+            </li>
+            <li>
+                <b>basePath</b>: a string (defaults to empty "") which specifies a path value to prepend to every stylesheet URL. All relative
+                stylesheet URL's are already automatically fully qualified to the page's location, so this basePath should really be used to set
+                some other absolute path to override this qualification for otherwise relative "looking" stylesheet URL's.
+            </li>
+            <li>
+                <b>allowDuplicates</b>: a boolean (defaults to false) which controls whether or not CSS.load will inspect its internal
+                stylesheet URL cache to prevent a stylesheet URI from being (accidentally, most likely) loaded a second time. By default, CSS.load will
+                not make any duplicate requests for the same stylesheet URL.
+            </li>
+            <li>
+                <b>cacheBust</b>: a boolean (defaults to false) which adds a random number parameter to every stylesheet URL to prevent the URL you requested
+                from being cached. In other words, your requested stylesheet will be loaded new each time, since it will have a new random number on the URL
+                each time.
+            </li>
+        </ul>
+        <p>
+            <span class="text-underline">Returns</span><br>
+            <i>$CSS</i> : the chained object reference so subsequent calls to <a href="#load">load()</a> can be made.
+        </p>
+        <div class="highlight">
+            <span class="text-underline">Example</span>
+            <pre><code>$CSS({
+    insertAtElement: 'link.theme-base', // the first link tag with class="theme-base"
+    insertBefore: true, // insert before 'link.theme-base' element
+    basePath: '//cdn.my-cdn.com/assets/css/', // use a different base path
+    allowDuplicates: true, // browser may fetch CSS from cache
+    cacheBust: true // always request a fresh CSS
+});</code></pre>
+        </div>
+
+        <hr>
+        <p id="load">
+            [<i>$CSS</i>] $CSS()<b>.load</b>(<i>varies</i>,...)
+        </p>
+        <p>
+            This method accepts one or more parameters of varying types. Each parameter value is intended to specify a stylesheet resource URI to load.
+        </p>
+        <p>
+            <span class="text-underline">Parameters</span><br>
+            <i>varies</i> (can be any number/combination of the following):
+        </p>
+        <ul>
+            <li><i>string</i> : a relative or absolute path URI to a local or remote stylesheet</li>
+            <li><i>object</i> : an object containing one or more additional attributes to insert on <code>&lt;link&gt;</code> element:
+                <ul>
+                    <li><i>string</i> href : (required) a relative or absolute path URI to a local or remote stylesheet</li>
+                    <li>...etc... Example: </li>
+                    <li><i>string</i> type : (optional) the MIME type attribute (eg, "text/css" etc)</li>
+                    <li><i>string</i> media : (optional) the media attribute (defaults to "all")</li>
+                </ul>
+            </li>
+            <li><i>array</i> : an array of parameters of any of the allowed types (including array)</li>
+            <li>
+                <p id="script-function"><i>function</i> : if a function is found as one of the parameters, that function will be
+                be executed immediately, which must return a value directly. The return value must be one of the other allowable types
+                (<i>string</i>, <i>object</i>, or <i>array</i>). If the function call results in no return value ("undefined") or
+                the value is "falsy" (false, null, etc), it will be interpreted as no stylesheet found.
+            </p>
+                <p>
+                This feature allows the construction of "conditional chains", where run-time logic is used to decide ultimately what
+                stylesheet will be loaded by the $CSS chain.
+            </p>
+            </li>
+        </ul>
+        <p>
+            <span class="text-underline">Returns</span><br>
+            <i>$CSS</i> : the chained <i>promise</i> object reference so subsequent calls to <a href="#done">done()</a>,
+            <a href="#fail">fail()</a> and <a href="#always">always()</a> can be made.
+        </p>
+        <div class="highlight">
+            <span class="text-underline">Example</span>
+            <pre><code class="javascript">$CSS().load([
+    "path/to/stylesheet-1.css",
+    ["path/to/stylesheet-2.css", "path/to/stylesheet-3.css"],
+    {
+        href: "path/to/stylesheet-4.css",
+        class: "print-theme",
+        media: "print"
+    },
+    function(){
+        // can perform any funny logic here :)
+        return "path/to/stylesheet-5.css";
+    }
+], "path/to/stylesheet-6.css", "path/to/stylesheet-7.css");</code></pre>
+        </div>
+        <p>
+            <b>NOTE:</b> The returned chained object does not include load() ie, subsequent calls to <a href="#load">load()</a> such as
+            <code>$CSS().load()<span style="color:red">.load()</span></code> cannot be made. This feature is intentional.
+        </p>
+
+        <hr>
+        <p id="done">
+            [<i>$CSS</i>] $CSS().load()<b>.done</b>(<i>function</i> <b>inlineScript(ss_obj)</b>[=<i>null</i>])
+        </p>
+        <p>
+            This function is used to run a callback function reference (usually an inline anonymous function) when each stylesheet
+            specified with <code>.load()</code> has been successfully loaded.
+        </p>
+        <p>
+            <span class="text-underline">Parameters</span><br>
+            <b>inlineScript</b> : The callback function to run when stylesheet has been successfully loaded. Sets a reference
+            to the current stylesheet that was successfully loaded as the first parameter.
+        </p>
+        <p>
+            <span class="text-underline">Returns</span><br>
+            <i>$CSS</i> : the chained <i>promise</i> object reference so subsequent calls to <a href="#done">done()</a>,
+            <a href="#fail">fail()</a> and <a href="#always">always()</a> can be made.
+        </p>
+        <div class="highlight">
+            <span class="text-underline">Example</span>
+            <pre><code>$CSS().load(["path/to/stylesheet-1.css", "path/to/stylesheet-2.css"])
+    .done(function(ss_obj){
+        // attribute 'data-href' holds the default uri before any uri rewrite
+        window.console.info(ss_obj.getAttribute('data-href') + ' was successfully loaded');
+    });</code></pre>
+        </div>
+
+        <hr>
+        <p id="fail">
+            [<i>$CSS</i>] $CSS().load()<b>.fail</b>(<i>function</i> <b>inlineScript(ss_obj)</b>[=<i>null</i>])
+        </p>
+        <p>
+            This function is used to run a callback function reference (usually an inline anonymous function) when each stylesheet
+            specified with <code>.load()</code> has failed to load.
+        </p>
+        <p>
+            <span class="text-underline">Parameters</span><br>
+            <b>inlineScript</b> : The callback function to run when stylesheet has failed to load. Sets a reference
+            to the current stylesheet that failed to load as the first parameter.
+        </p>
+        <p>
+            <span class="text-underline">Returns</span><br>
+            <i>$CSS</i> : the chained <i>promise</i> object reference so subsequent calls to <a href="#done">done()</a>,
+            <a href="#fail">fail()</a> and <a href="#always">always()</a> can be made.
+        </p>
+        <div class="highlight">
+            <span class="text-underline">Example</span>
+            <pre><code>$CSS().load(["path/to/stylesheet-1.css", "path/to/stylesheet-2.css"])
+    .fail(function(ss_obj){
+        // attribute 'data-href' holds the default uri before any uri rewrite
+        window.console.info(ss_obj.getAttribute('data-href') + ' failed to load');
+    });</code></pre>
+        </div>
+
+        <hr>
+        <p id="always">
+            [<i>$CSS</i>] $CSS().load()<b>.always</b>(<i>function</i> <b>inlineScript(ss_obj)</b>[=<i>null</i>])
+        </p>
+        <p>
+            This function is used to run a callback function reference (usually an inline anonymous function) when each stylesheet
+            specified with <code>.load()</code> has either successfully loaded or failed to load.
+        </p>
+        <p>
+            <span class="text-underline">Parameters</span><br>
+            <b>inlineScript</b> : The callback function to run when stylesheet has either successfully loaded or failed to load. Sets a reference
+            to the current stylesheet that has either successfully loaded or failed to load as the first parameter.
+        </p>
+        <p>
+            <span class="text-underline">Returns</span><br>
+            <i>$CSS</i> : the chained <i>promise</i> object reference so subsequent calls to <a href="#done">done()</a>,
+            <a href="#fail">fail()</a> and <a href="#always">always()</a> can be made.
+        </p>
+        <div class="highlight">
+            <span class="text-underline">Example</span>
+            <pre><code>$CSS().load(["path/to/stylesheet-1.css", "path/to/stylesheet-2.css"])
+    .always(function(ss_obj){
+        // attribute 'data-href' holds the default uri before any uri rewrite
+        window.console.info(ss_obj.getAttribute('data-href') + ' was either successful or unsuccessful');
+    });</code></pre>
+        </div>
+
+        <hr>
+        <p id="noConflict">
+            [<i>$CSS</i>] $CSS()<b>.noConflict</b>(none)
+        </p>
+        <p>
+            noConflict() rolls back the page to the previous version of $CSS (if any) before CSS.load was executed, and returns
+            the current instance of $CSS.
+        </p>
+        <p>
+            <span class="text-underline">Parameters</span><br>
+            <i>none</i>
+        </p>
+        <p>
+            <span class="text-underline">Returns</span><br>
+            <i>$CSS() instance</i> : the current $CSS() instance (from before the rollback)
+        </p>
+        <div class="highlight">
+            <span class="text-underline">Example</span>
+            <pre><code class="javascript">window.loadCSS = $CSS().noConflict();
+loadCSS().load("path/to/stylesheet.css");</code></pre>
+        </div>
+
+        <hr>
+
+        <h2>Usage Tips</h2>
+
+        <p>
+            I typically use <code>CSS.load</code> to load CSS files that are non-critical to the initial rendering of a page.
+        </p>
+        <p>
+            <b>NOTE:</b> The <code>rel=preload</code> pattern is used for faster asynchronous stylesheet loading as it is fetched as
+            soon as CSS.load is executed. See this page's source for a live example of how it's used to improve page loading performance.
+        </p>
+
+        <a name="online-tests"></a>
+        <h2>Online Tests</h2>
+        <p>
+            Below are in-browser tests:
+        </p>
+        <ol>
+            <li>
+                <a href="tests/test-1-loading-stylesheets-a.html">Loading Stylesheets (a) without promise</a>
+            </li>
+            <li>
+                <a href="tests/test-1-loading-stylesheets-b-with-promise.html">Loading Stylesheets (b) with promise</a>
+            </li>
+            <li>
+                <a href="tests/test-2-auto-rel-preload-polyfill.html">Automatic rel=preload Polyfill</a>
+            </li>
+            <li>
+                <a href="tests/test-3-insert-at-position.html">Insert At Position</a>
+            </li>
+            <li>
+                <a href="tests/test-4-adjust-basepath.html">Adjust Basepath</a>
+            </li>
+            <li>
+                <a href="tests/test-5-loading-multiple-stylesheets-a.html">Loading Multiple Stylesheets (a) with promise</a>
+            </li>
+            <li>
+                <a href="tests/test-5-loading-multiple-stylesheets-b-with-promise.html">Loading Multiple Stylesheets (b) with promise</a>
+            </li>
+            <li>
+                <a href="tests/test-6-loading-same-multiple-stylesheets-a.html">Loading Same Multiple Stylesheets (a)</a>
+            </li>
+            <li>
+                <a href="tests/test-6-loading-same-multiple-stylesheets-b.html">Loading Same Multiple Stylesheets (b)</a>
+            </li>
+            <li>
+                <a href="tests/test-7-loading-from-cdn-a.html">Loading From CDN (a) without promise</a>
+            </li>
+            <li>
+                <a href="tests/test-7-loading-from-cdn-b-with-promise.html">Loading From CDN (b) with promise</a>
+            </li>
+        </ol>
+
+        <h2>Browser Support</h2>
+
+        <p>CSS.load attempts to load a css file asynchronously in any JavaScript-capable browser. However, some older browsers will block rendering while the stylesheet is loading. This table outlines css loading support and async loading support.</p>
+
+        <table>
+            <tbody><tr>
+                <th>Browser</th>
+                <th>CSS Loads Successfully</th>
+                <th>CSS Loads without Blocking Render</th>
+            </tr>
+            <tr>
+                <th>Chrome Mac (latest and many recent versions)</th>
+                <th>Yes</th>
+                <th>Yes</th>
+            </tr>
+            <tr>
+                <th>Firefox Desktop (latest and many recent versions)</th>
+                <th>Yes</th>
+                <th>Yes</th>
+            </tr>
+            <tr>
+                <th>Opera Mac (latest and many recent versions)</th>
+                <th>Yes</th>
+                <th>Yes</th>
+            </tr>
+            <tr>
+                <th>Safari Mac (latest and many recent versions)</th>
+                <th>Yes</th>
+                <th>Yes</th>
+            </tr>
+            <tr>
+                <th>Safari iOS (latest and many recent versions)</th>
+                <th>Yes</th>
+                <th>Yes</th>
+            </tr>
+            <tr>
+                <th>Chrome Android 5.x</th>
+                <th>Yes</th>
+                <th>Yes</th>
+            </tr>
+            <tr>
+                <th>Chrome Android 4.x</th>
+                <th>Yes</th>
+                <th>Yes</th>
+            </tr>
+            <tr>
+                <th>Android Browser 2.3</th>
+                <th>Yes</th>
+                <th>No</th>
+            </tr>
+            <tr>
+                <th>Kindle Fire HD</th>
+                <th>Yes</th>
+                <th>Yes</th>
+            </tr>
+            <tr>
+                <th>Windows Phone IE 8.1</th>
+                <th>Yes</th>
+                <th>Yes</th>
+            </tr>
+            <tr>
+                <th>IE 11</th>
+                <th>Yes</th>
+                <th>Yes</th>
+            </tr>
+            <tr>
+                <th>IE 10</th>
+                <th>Yes</th>
+                <th>Yes</th>
+            </tr>
+            <tr>
+                <th>IE 9</th>
+                <th>Yes</th>
+                <th>Yes</th>
+            </tr>
+            <tr>
+                <th>IE 8</th>
+                <th>Yes</th>
+                <th>Yes</th>
+            </tr>
+            <tr title="Can edit source to support IE7">
+                <th>IE 7 <small class="text-muted">(no querySelector() support)</small></th>
+                <th class="text-strike">Yes</th>
+                <th class="text-strike">Yes</th>
+            </tr>
+            <tr title="Can edit source to support IE6">
+                <th>IE 6 <small class="text-muted">(no querySelector() support)</small></th>
+                <th class="text-strike">Yes</th>
+                <th>No</th>
+            </tr>
+
+            </tbody></table>
+
+    </section>
+    <footer>
+        <p>Project maintained by <a href="https://www.eharry.me" target="cl_tab">Harrison Emmanuel (Ema4rl)</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
+    </footer>
+</div>
+</body>
+</html>

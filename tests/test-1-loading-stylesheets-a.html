@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CSS.load tests (Loading stylesheets)</title>
+    <!-- testing data-only script loading -->
+    <script src="../assets/js/CSS.load.min.js"></script>
+    <script>
+        $CSS().load({href: "css/bootstrap.min.css", media: "screen"});
+    </script>
+</head>
+
+<body>
+
+<h1>CSS.load tests (Loading stylesheets)</h1>
+<ul>
+    <li>
+        <a href="test-1-loading-stylesheets-a.html">Loading Dependencies without promise</a>
+    </li>
+    <li>
+        <a href="test-1-loading-stylesheets-b-with-promise.html">Loading Dependencies with promise</a>
+    </li>
+</ul>
+
+<img src="images/a30bc212d61711e29ade22000a1f9bd0_7.jpg" width="100" hspace="5" alt="image 1" title="size: 379kb" />
+<img src="images/ed146454723f11e29f5522000a9f14ae_7.jpg" width="100" hspace="5" alt="image 2" title="size: 20kb" />
+
+<br />
+<form name="log_form">
+    <label>
+        <textarea id="load_log" name="load_log" cols="80" rows="10"></textarea>
+    </label>
+</form>
+
+</body>
+</html>
