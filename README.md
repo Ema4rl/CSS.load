@@ -7,7 +7,7 @@ Inspired by: [loadCSS](https://github.com/filamentgroup/loadCSS),
 
 ## Documentation
 
-[Online Docs & Demo](http://ema4rl.github.io/CSS.load)
+[Online Docs & Demo](https://git.io/viTTS)
 
 ## Contributions and bug fixes
 
